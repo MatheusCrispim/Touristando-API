@@ -41,7 +41,7 @@ class AttractionController extends Controller
         $validate = Validator::make($data, 
         [   'name' => 'required|max:191', 
             'description' => 'required', 
-            "image" => 'required', 
+            'image' => 'required', 
             'latitude' => 'required', 
             'longitude' => 'required'
         ]);
@@ -178,7 +178,6 @@ class AttractionController extends Controller
         if(!is_null($attraction))
         {
             $images =  $attraction->images;
-            print_r($images);
             return ImageResource::collection($images);
         }
 
