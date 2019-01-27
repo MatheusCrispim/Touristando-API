@@ -1,6 +1,6 @@
 # Touristando-API
 
-This API was developed for the purpose of providing information for the [Touristando](https://github.com/MatheusCrispim/Touristando)
+This API was developed for the purpose of providing information for the [Touristando](https://github.com/MatheusCrispim/Touristando) App
 
 ## Dependencies
 
