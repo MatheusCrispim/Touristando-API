@@ -158,7 +158,8 @@ To register a new image for an attraction, just send a POST request to the endpo
 
 ```json
 {
-	"attraction_id": <Id attraction>,
+
+    "attraction_id": <Attraction Id>,
     "image": "<Image Base64>"
 }
 ```
