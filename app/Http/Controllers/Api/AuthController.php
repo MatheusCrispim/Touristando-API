@@ -58,12 +58,12 @@ class AuthController extends Controller
                 $response = ['token' => $token];
                 return response($response, 200);
             } else {
-                $response = "Senha incorreta";
+                $response = ['message' => 'Senha incorreta'];
                 return response($response, 422);
             }
     
         } else {
-            $response = 'Usuário inexistente';
+            $$response = ['message' => 'Usuário inexistente'];
             return response($response, 422);
         }
     
@@ -71,19 +71,12 @@ class AuthController extends Controller
 
 
     public function logout(Request $request) {
-
         $token = $request->user()->token();
         $token->revoke();
 
-        $response = 'Desconectado com sucesso!';
+        $$response = ['message' => 'Desconectado com sucesso!'];
         return response($response, 200);
 
-    }
-
-
-    public function unauthenticated(Request $request){
-        $reponse="Não autenticado";
-        return response($response, 403);
     }
 
 }
