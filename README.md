@@ -134,7 +134,7 @@ To get the images of a registered attraction, simply send a GET request to the f
 
 * **Update attraction** 
 
-To update the data of an attraction, simply send a PUT request to the endpoint / api / attractions / {id}, where possible any of the fields in the structure below:
+To update the data of an attraction, simply send a PUT request to the endpoint **/api/attractions/{id}**, where possible any of the fields in the structure below:
 
 ```json
 {
