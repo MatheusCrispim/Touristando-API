@@ -37,7 +37,12 @@ sudo php artisan key:generate
 ```
 php artisan migrate
 ```
-
+```
+php artisan passport:install
+```
+```
+php artisan storage:link
+```
 ```
 If you want to run this project in production, open .env and set the values for the following fields:
 
