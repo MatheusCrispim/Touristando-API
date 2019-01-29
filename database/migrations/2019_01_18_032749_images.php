@@ -22,8 +22,11 @@ class Images extends Migration
 
         Schema::table('images', function ($table) {
             $table->unsignedInteger('attraction_id')->nullable();
+            $table->unsignedInteger('user_id')->nullable();
             $table->foreign('attraction_id')->references('id')->on('attractions');
+            $table->foreign('user_id')->references('id')->on('users');
         });
+
     }
 
     /**

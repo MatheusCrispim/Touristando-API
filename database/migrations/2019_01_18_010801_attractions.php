@@ -17,10 +17,16 @@ class Attractions extends Migration
             $table->increments('id')->unique();
             $table->string('name');
             $table->text('description');
-            $table->float('latitude');
-            $table->float('longitude');
+            $table->decimal('latitude', 10, 8);
+            $table->decimal('longitude', 11, 8);
             $table->timestamps();
         });
+
+        Schema::table('attractions', function ($table) {
+            $table->unsignedInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users');
+        });
+        
     }
 
     /**

@@ -19,7 +19,8 @@ class AttractionResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'latitude' => $this->latitude,
-            'longitude' => $this->longitude,            
+            'longitude' => $this->longitude,
+            'user_id' => $this->user->id,
         ];
     }
 }

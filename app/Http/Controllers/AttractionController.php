@@ -33,46 +33,62 @@ class AttractionController extends Controller
      */
     public function store(Request $request)
     {
-        $arrayUtils = new ArrayUtils();
         $imageUtils = new ImageUtils();
 
         $data = $request->all();
 
-        $validate = Validator::make($data, 
+        $validator = Validator::make($data, 
         [   'name' => 'required|max:191', 
             'description' => 'required', 
             'image' => 'required', 
-            'latitude' => 'required', 
-            'longitude' => 'required'
+            'latitude' => ['required', 'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/', 'max:19'], 
+            'longitude' => ['required', 'regex:/^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/', 'max:19'], 
+        ],[
+            'required' => 'O campo :attribute é obrigatório',
+            'latitude.regex' => 'O dado passado no campo :attribute deve ser uma latitude',
+            'longitude.regex' => 'O dado passado no campo :attribute deve ser uma longitude',
+            'latitude.max' => 'O valor passado no campo :attribute excede o limite de precisão',
+            'longitude.max' => 'O valor passado no campo :attribute excede o limite de precisão',
+            'max' => 'O dado passado no campo :attribute excede a quantidade limite de caracteres'
+        ],[
+            'name' => 'name',
+            'description' => 'description',
+            'image' => 'image',
+            'latitude' => 'latitude',
+            'longitude' => 'longitude'
         ]);
 
-        if ($validate->fails())
+
+        if ($validator->fails())
         {
-            return response()->json( "Requisição mal formada!", 404); 
+            return response(['errors'=>$validator->errors()->all()], 422);
         }
 
         if(!$imageUtils->isValidImage($data['image']))
         {
-            return response()->json( "Requisição mal formada!", 404); 
+            return response(['errors'=>['Imagem inválida']], 422);
         }
 
-        $numberOfAttractions=Attraction::where('latitude', '=', $data['latitude'], 'and', 'longitude', '=', $data['latitude'])->count();
+        $numberOfAttractions = Attraction::where('latitude', '=', $data['latitude'], 'and', 'longitude', '=', $data['longitude'])->count();
 
         if($numberOfAttractions == 0)
         {
+         
+            $data['user_id'] = $request->user()->id;
             $attraction = Attraction::create($data);
-
-            $imageRequest = new Request();
-            $imageRequest->setMethod('POST');
-            $imageRequest->request->add(['attraction_id' =>  $attraction->id, 'image' => $data['image']]);
+            $request->merge(['attraction_id' =>  $attraction->id, 'image' => $data['image']]);
 
             $imagesController = new ImageController();
-            $imagesController->store($imageRequest);
+            $imagesController->store($request);
 
             return new AttractionResource($attraction);
         }
 
-        return response()->json( "Já cadastrado!", 409);
+        $response = [
+            'message' => 'Já cadastrado!'
+        ];
+
+        return response()->json($response , 409);
     }
 
 
@@ -88,10 +104,15 @@ class AttractionController extends Controller
 
         if(!is_null($attraction))
         {
-            return new attractionResource($attraction);
+            return new AttractionResource($attraction);
         }
 
-        return response()->json("Nada encontrado!", 404);
+
+        $response = [
+            'message' => 'Nada encontrado!'
+        ];
+
+        return response()->json( $response, 404);
     }
 
 
@@ -105,6 +126,28 @@ class AttractionController extends Controller
     public function update(Request $request, $id)
     {
         $data = $request->all();
+
+        $validator = Validator::make($data, 
+        [   'name' => 'max:191',  
+            'latitude' => ['regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/', 'max:20'], 
+            'longitude' => ['regex:/^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/', 'max:20'], 
+        ],[
+            'latitude.regex' => 'O dado passado no campo :attribute deve ser uma latitude',
+            'longitude.regex' => 'O dado passado no campo :attribute deve ser uma longitude',
+            'latitude.max' => 'O valor passado no campo :attribute excede o limite de precisão',
+            'longitude.max' => 'O valor passado no campo :attribute excede o limite de precisão',
+            'max' => 'O dado passado no campo :attribute excede a quantidade limite de caracteres'
+        ],[
+            'name' => 'name',
+            'latitude' => 'latitude',
+            'longitude' => 'longitude'
+        ]);
+
+        if ($validator->fails())
+        {
+            return response(['errors'=>$validator->errors()->all()], 422);
+        }
+
         $attraction = Attraction::find($id);  
 
         if(!is_null($attraction))
@@ -115,7 +158,11 @@ class AttractionController extends Controller
                                             ->setStatusCode(202);
         }
 
-        return response()->json("Nada encontrado!", 404);   
+        $response = [
+            'message' => 'Nada encontrado!'
+        ];
+
+        return response()->json( $response, 404);
     }
 
 
@@ -139,19 +186,51 @@ class AttractionController extends Controller
             }
             
             $attraction->delete();
-            return response()->json("Removido com sucesso!", 204);
+
+            return response()->json(null, 204);
         }
 
-        return response()->json("Nada encontrado!", 404);  
+        $response = [
+            'message' => 'Nada encontrado!'
+        ];
+
+        return response()->json( $response, 404);
     }
 
 
     public function getNearbyAttractions($latitude, $longitude, $radius)
     {
+        $data = [
+          
+            'latitude' => $latitude,
+            'longitude' => $longitude,
+            'radius' => $radius,
+        ];
+
+        $validator = Validator::make($data, 
+        [   
+            'latitude' => ['required', 'regex:/^[-]?(([0-8]?[0-9])\.(\d+))|(90(\.0+)?)$/'], 
+            'longitude' => ['required', 'regex:/^[-]?((((1[0-7][0-9])|([0-9]?[0-9]))\.(\d+))|180(\.0+)?)$/'], 
+            'radius' => 'required|numeric',  
+        ],[
+            'required' => 'O campo :attribute é obrigatório',
+            'numeric' => 'O dado passado no campo :attribute deve ser um raio',
+            'latitude.regex' => 'O dado passado no campo :attribute deve ser uma latitude',
+            'longitude.regex' => 'O dado passado no campo :attribute deve ser uma longitude',
+        ],[
+            'radius' => 'radius',
+            'latitude' => 'latitude',
+            'longitude' => 'longitude'
+        ]);
+
+        if ($validator->fails())
+        {
+            return response(['errors'=>$validator->errors()->all(), 'format'=>'Os dados devem ser passados da seguinte forma /latitude/longitude/raio via GET'], 422);
+        }
         
-        $request = array('latitude'=>$latitude, 'longitude'=>$longitude, 'latitude2'=>$latitude, 'radius'=>$radius);
+        $data = array('latitude'=>$latitude, 'longitude'=>$longitude, 'latitude2'=>$latitude, 'radius'=>$radius);
         
-        $attraction = DB::select( DB::raw(
+        $attractions = DB::select( DB::raw(
             "SELECT *,
                     (6371 * acos(
                         cos( radians(:latitude) )
@@ -162,12 +241,12 @@ class AttractionController extends Controller
                         )
                     ) AS distance
             FROM `attractions` 
-            HAVING distance < :radius
+            HAVING distance <= :radius
             ORDER BY distance ASC;"
-        ),   $request);
+        ),  $data);
 
         
-        return $attraction;
+        return $attractions;
     }
 
 
@@ -181,7 +260,11 @@ class AttractionController extends Controller
             return ImageResource::collection($images);
         }
 
-        return response()->json( "Nada encontrado!", 404);
+        $response = [
+            'message' => 'Nada encontrado!'
+        ];
+
+        return response()->json( $response, 404);
     }
 
 }

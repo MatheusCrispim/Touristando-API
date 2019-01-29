@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Attraction extends Model
 {
     protected $fillable = [
-        'name', 'description', 'latitude', 'longitude'
+        'name', 'description', 'latitude', 'longitude', 'user_id'
     ];
 
 
@@ -17,6 +17,11 @@ class Attraction extends Model
     }
 
 
+    public function user(){
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
 }
+
 
 

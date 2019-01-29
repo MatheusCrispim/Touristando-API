@@ -21,6 +21,8 @@ class ImageResource extends JsonResource
         return [
             'id' => $this->id,
             'path' =>  $attractions_view_path.'/images/'.$this->name, 
+            'attraction_id' => $this->attraction->id,
+            'user_id' => $this->user->id,
         ];
     }
 }

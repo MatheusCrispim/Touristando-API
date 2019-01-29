@@ -12,10 +12,27 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::apiResource('/attractions', 'AttractionController');
-Route::get('/attraction/{id}/images', 'AttractionController@getAttractionImages');
-Route::get('/attractions/nearby/{latitude}/{longitude}/{radius}', 'AttractionController@getNearbyAttractions');
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+Route::group(['middleware' => ['json.response']], function () {
+
+    Route::middleware('auth:api')->get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+    // public routes
+    Route::post('/login', 'Api\AuthController@login')->name('login.api');
+    Route::post('/register', 'Api\AuthController@register')->name('register.api');
+ 
+
+    // private routes
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/logout', 'Api\AuthController@logout')->name('logout.api');
+
+        Route::apiResource('/attractions', 'AttractionController');
+        Route::get('/attractions/{id}/images', 'AttractionController@getAttractionImages');
+        Route::get('/attractions/nearby/{latitude}/{longitude}/{radius}', 'AttractionController@getNearbyAttractions');
+
+        Route::apiResource('/images', 'ImageController');
+    });
+
 });
