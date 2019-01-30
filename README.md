@@ -18,7 +18,7 @@ OS X & Linux:
 ```
 composer install
 ```
-* Create a database in MySQL
+Create a database in MySQL
 ```
 cp .env.example .env
 ```
@@ -77,7 +77,7 @@ The expected response if the user is successfully registered is an authenticatio
 
 * **User login**
 
-To perform actions on the API it is necessary that the user is authenticated. To do this, simply send a POST-type request to the **/api/login** endpoint with the following structure:
+To perform actions on the API it is necessary that the user is authenticated. To do this, simply send a POST request to the **/api/login** endpoint with the following structure:
 
 ```json
 {
@@ -85,7 +85,7 @@ To perform actions on the API it is necessary that the user is authenticated. To
 	"password": "password123"
 }
 ```
-The expected response if the user authenticates successfully is an authentication token with the following structure:
+The expected response if the user authenticates successfully, is an authentication token with the following structure:
 
 ```json
 {
