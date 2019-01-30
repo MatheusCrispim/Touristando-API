@@ -101,7 +101,7 @@ Authorization: Bearer <Token>
 
 * **Attraction register**
 
-To register a new attraction in the database, just send a POST request to the **/api/attractions** endpoint with the following structure
+To register a new attraction in the database, just send a POST request to the **/api/attractions** endpoint with the following structure:
 
 ```json
 {
@@ -181,7 +181,7 @@ To delete an image, simply send a DELETE request to the following endpoint:
 ```
 * **Get user data**
 
-To get the data of the logged in user, just send a GET request to the following endpoint:
+To get the data of the logged-in user, just send a GET request to the following endpoint:
 
 ```
 /api/user
