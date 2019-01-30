@@ -63,7 +63,7 @@ class AuthController extends Controller
             }
     
         } else {
-            $$response = ['message' => 'Usuário inexistente'];
+            $response = ['message' => 'Usuário inexistente'];
             return response($response, 422);
         }
     
@@ -74,7 +74,7 @@ class AuthController extends Controller
         $token = $request->user()->token();
         $token->revoke();
 
-        $$response = ['message' => 'Desconectado com sucesso!'];
+        $response = ['message' => 'Desconectado com sucesso!'];
         return response($response, 200);
 
     }
