@@ -18,7 +18,7 @@ OS X & Linux:
 ```
 composer install
 ```
-Create a database in MySQL
+* Create a database in MySQL
 ```
 cp .env.example .env
 ```
